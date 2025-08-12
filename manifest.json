@@ -4,6 +4,13 @@
   "version": "1.0.0",
   "description": "A extension that secures you privacy on the web",
 
+  "icons": {
+    "16": "icons/vayl-shield-purple-16x16.svg",
+    "32": "icons/vayl-shield-purple-32x32.svg",
+    "48": "icons/vayl-shield-purple-48x48.svg",
+    "128": "icons/vayl-shield-purple-128x128.svg"
+  },
+
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
@@ -27,6 +34,12 @@
 
   "action": {
     "default_popup": "src/popup/popup.html",
-    "default_title": "Vayl"
+    "default_title": "Vayl",
+    "default_icon": {
+      "16": "icons/vayl-shield-purple-16x16.svg",
+      "32": "icons/vayl-shield-purple-32x32.svg",
+      "48": "icons/vayl-shield-purple-48x48.svg",
+      "128": "icons/vayl-shield-purple-128x128.svg"
+    }
   }
 }
