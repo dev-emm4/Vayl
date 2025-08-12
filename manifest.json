@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Vayl",
+  "version": "1.0.0",
+  "description": "A extension that secures you privacy on the web",
+
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "activeTab"
+  ],
+
+  "host_permissions": ["<all_urls>"],
+
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "src/rules/easyprivacy_processed.json"
+      }
+    ]
+  },
+  "background": {
+    "service_worker": "src/backgroundScripts/background.js"
+  },
+
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "Vayl"
+  }
+}

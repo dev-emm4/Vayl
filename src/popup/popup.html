@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vayl</title>
+    <meta name="viewport" content="width=800, height=600, initial-scale=1.0" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup-container">
+      <!-- Header with activate/deactivate button -->
+      <header class="popup-header">
+        <h1 class="popup-title">Vayl</h1>
+        <button id="toggle-extension" class="toggle-btn active">
+          Deactivate
+        </button>
+      </header>
+
+      <!-- Website URL and Score Section -->
+      <section class="website-info">
+        <div class="website-details">
+          <span class="website-label">Website:</span>
+          <span class="website-url">www.example.com</span>
+        </div>
+        <div class="website-score">
+          <span class="score-label">Score:</span>
+          <span class="score-value">8.5/10</span>
+        </div>
+      </section>
+
+      <!-- Show Blocked Trackers Button -->
+      <div class="reflection-btn-wrapper">
+        <button class="show-trackers-btn" id="show-trackers-btn">
+          Show Blocked Trackers
+        </button>
+      </div>
+    </div>
+
+    <!-- Slide-out Blocked Trackers Panel -->
+    <aside class="trackers-panel" id="trackers-panel">
+      <div class="panel-header">
+        <button id="close-panel" class="close-panel-btn" aria-label="Close">
+          &times;
+        </button>
+        <h2>Blocked Trackers</h2>
+      </div>
+      <ul class="trackers-list">
+        <li>tracker1.analytics.com</li>
+        <li>ads.example.com</li>
+        <li>pixel.tracker.net</li>
+        <li>another-tracker.org</li>
+      </ul>
+    </aside>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
