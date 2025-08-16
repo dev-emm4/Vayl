@@ -1,4 +1,5 @@
-import IdGenerator from "./idGenerator";
+import IdGenerator from "./idGenerator.js";
+import ConflictError from "./error/conflictError.js";
 
 class ExtensionService {
   constructor() {
@@ -27,7 +28,7 @@ class ExtensionService {
     );
 
     if (existingBlockingRulesId == null) {
-      throw new Error("url is already enabled");
+      throw new ConflictError("url is already enabled");
     }
 
     const updateRuleOption = {
@@ -48,21 +49,21 @@ class ExtensionService {
     if (
       this._getIdsOfExistingDisableBlockingRule(existingRules, aUrl) != null
     ) {
-      throw new Error("url is already disabled");
+      throw new ConflictError("url is already disabled");
     }
 
     const id = this.idGenerator.generateId();
 
     const updateRuleOption = {
-      addRules: this._disablingBlockingRuleForUrl(aUrl, id),
+      addRules: [this._disablingBlockingRuleForUrl(aUrl, id)],
     };
 
     this._updateDynamicRule(updateRuleOption);
     this._publishDisabledBlockingEventFor(aUrl);
   }
 
-  _getDynamicRules() {
-    return chrome.declarativeNetRequest.getDynamicRules();
+  async _getDynamicRules() {
+    return await chrome.declarativeNetRequest.getDynamicRules();
   }
 
   _hasNumberOfDynamicRuleReachLimit(rules) {
@@ -114,7 +115,7 @@ class ExtensionService {
   }
 
   _disablingBlockingRuleForUrl(aUrl, anId) {
-    rule = {
+    const rule = {
       id: anId,
       priority: 100,
       action: {
@@ -129,8 +130,8 @@ class ExtensionService {
     return rule;
   }
 
-  _updateDynamicRule(updateRuleOptions) {
-    chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
+  async _updateDynamicRule(updateRuleOptions) {
+    await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
   }
 
   _publishDisabledBlockingEventFor(aUrl) {

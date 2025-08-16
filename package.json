@@ -1,0 +1,27 @@
+{
+  "name": "vayl",
+  "version": "1.0.0",
+  "description": "**Your privacy, secured and defended.**",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dev-emm4/Vayl"
+  },
+  "keywords": [],
+  "author": "dev-emm4",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dev-emm4/Vayl/issues"
+  },
+  "homepage": "https://github.com/dev-emm4/Vayl#readme",
+  "devDependencies": {
+    "jest": "^30.0.5"
+  }
+}
