@@ -14,7 +14,9 @@
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
-    "activeTab"
+    "activeTab",
+    "storage",
+    "tabs"
   ],
 
   "host_permissions": ["<all_urls>"],
@@ -29,7 +31,8 @@
     ]
   },
   "background": {
-    "service_worker": "src/backgroundScripts/background.js"
+    "service_worker": "src/serviceWorkers/extensionController.js",
+    "type": "module"
   },
 
   "action": {

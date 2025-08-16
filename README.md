@@ -72,12 +72,6 @@ Vayl is committed to protecting your privacy:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- Thanks to all privacy advocates who make the web a safer place
-- Built with modern web technologies and privacy-first principles
-- Inspired by the need for transparent, user-controlled privacy tools
-
 **Made with ❤️ for privacy-conscious users everywhere.**
 
 _Vayl - Because your privacy shouldn't be a mystery._
