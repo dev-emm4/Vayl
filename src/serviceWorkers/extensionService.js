@@ -28,7 +28,7 @@ class ExtensionService {
     );
 
     if (existingBlockingRulesId == null) {
-      throw new ConflictError("url is already enabled");
+      throw new ConflictError("blocking is already enabled");
     }
 
     const updateRuleOption = {
@@ -52,7 +52,7 @@ class ExtensionService {
     if (
       this._getIdsOfExistingDisableBlockingRule(existingRules, aUrl) != null
     ) {
-      throw new ConflictError("url is already disabled");
+      throw new ConflictError("blocking is already disabled");
     }
 
     const id = this.idGenerator.generateId();

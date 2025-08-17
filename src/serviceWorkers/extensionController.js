@@ -17,12 +17,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   } catch (error) {
     if (
       error instanceof ConflictError &&
-      error.message == "url is already enabled"
+      error.message == "blocking is already enabled"
     ) {
       return;
     } else if (
       error instanceof ConflictError &&
-      error.message == "url is already disabled"
+      error.message == "blocking is already disabled"
     ) {
       return;
     } else if (
