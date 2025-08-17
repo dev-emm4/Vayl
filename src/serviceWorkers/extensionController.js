@@ -32,5 +32,5 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 });
 
 function name(params) {
-    ex
+  ex;
 }

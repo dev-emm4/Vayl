@@ -4,10 +4,11 @@
   "description": "**Your privacy, secured and defended.**",
   "main": "index.js",
   "directories": {
-    "test": "test"
+    "test": "tests"
   },
+  "type": "module",
   "scripts": {
-    "test": "jest",
+    "test": "node --experimental-vm-modules --experimental-specifier-resolution=node node_modules/.bin/jest",
     "test:watch": "jest --watch"
   },
   "repository": {
@@ -22,6 +23,8 @@
   },
   "homepage": "https://github.com/dev-emm4/Vayl#readme",
   "devDependencies": {
-    "jest": "^30.0.5"
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5"
   }
 }

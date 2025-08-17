@@ -1,0 +1,12 @@
+// {
+//   "compilerOptions": {
+//     "target": "es2017",
+//     "allowSyntheticDefaultImports": false,
+//     "baseUrl": "./",
+//     "types": ["jest"]
+//   },
+//   "typeAcquisition": {
+//     "include": ["jest"]
+//   },
+//   "include": ["src/**/*", "tests/**/*", "__tests__/**/*"]
+// }

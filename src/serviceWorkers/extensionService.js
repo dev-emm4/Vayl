@@ -119,7 +119,7 @@ class ExtensionService {
       id: anId,
       priority: 100,
       action: {
-        type: "block",
+        type: "allow",
       },
       condition: {
         urlFilter: "*",
@@ -130,8 +130,8 @@ class ExtensionService {
     return rule;
   }
 
-  async _updateDynamicRule(updateRuleOptions) {
-    await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
+  async _updateDynamicRule(anUpdateRuleOptions) {
+    await chrome.declarativeNetRequest.updateDynamicRules(anUpdateRuleOptions);
   }
 
   _publishDisabledBlockingEventFor(aUrl) {
