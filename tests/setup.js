@@ -13,11 +13,9 @@ class DeclarativeNetRequestAPI {
     if ("removeRuleIds" in anUpdateRuleOptions) {
       const idOfRulesToRemove = anUpdateRuleOptions.removeRuleIds;
 
-      this.dynamicRules.forEach((rule, index) => {
-        if (idOfRulesToRemove.includes(rule.id)) {
-          this.dynamicRules.splice(index, 1);
-        }
-      });
+      this.dynamicRules = this.dynamicRules.filter(
+        (rule) => !idOfRulesToRemove.includes(rule.id)
+      );
     }
 
     if ("addRules" in anUpdateRuleOptions) {
@@ -29,11 +27,30 @@ class DeclarativeNetRequestAPI {
   resetDynamicRules(aDynamicRuleList) {
     this.dynamicRules = aDynamicRuleList;
   }
+
+  addGenericRules(aRule, anAmount) {
+    this.dynamicRules = [];
+
+    for (let index = 0; index < anAmount; index++) {
+      this.dynamicRules.push(aRule);
+    }
+  }
 }
 
 class RuntimeAPI {
+  constructor() {
+    this.event = null;
+  }
   sendMessage(aMessage) {
-    console.log(aMessage);
+    this.event = aMessage
+  }
+
+  getPublishedEvent() {
+    return this.event;
+  }
+
+  resetEvent() {
+    this.event = null;
   }
 }
 

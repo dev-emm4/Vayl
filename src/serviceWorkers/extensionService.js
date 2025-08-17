@@ -36,14 +36,17 @@ class ExtensionService {
     };
 
     this._updateDynamicRule(updateRuleOption);
-    this._publishEnabledBlockingEventFor(aUrl);
+    this._publishEvent({
+      action: "enabledBlocking",
+      url: aUrl,
+    });
   }
 
   async disableBlockingRuleForUrl(aUrl) {
     const existingRules = await this._getDynamicRules();
 
     if (this._hasNumberOfDynamicRuleReachLimit(existingRules)) {
-      return;
+      throw new ConflictError("dynamic rule has reach quota");
     }
 
     if (
@@ -59,7 +62,10 @@ class ExtensionService {
     };
 
     this._updateDynamicRule(updateRuleOption);
-    this._publishDisabledBlockingEventFor(aUrl);
+    this._publishEvent({
+      action: "disabledBlocking",
+      url: aUrl,
+    });
   }
 
   async _getDynamicRules() {
@@ -67,7 +73,7 @@ class ExtensionService {
   }
 
   _hasNumberOfDynamicRuleReachLimit(rules) {
-    if (rules.length == 5000) {
+    if (rules.length >= 5000) {
       return true;
     }
 
@@ -134,18 +140,8 @@ class ExtensionService {
     await chrome.declarativeNetRequest.updateDynamicRules(anUpdateRuleOptions);
   }
 
-  _publishDisabledBlockingEventFor(aUrl) {
-    chrome.runtime.sendMessage({
-      action: "disabledBlocking",
-      url: aUrl,
-    });
-  }
-
-  _publishEnabledBlockingEventFor(aUrl) {
-    chrome.runtime.sendMessage({
-      action: "enabled",
-      url: aUrl,
-    });
+  _publishEvent(aMessage) {
+    chrome.runtime.sendMessage(aMessage);
   }
 }
 

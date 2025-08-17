@@ -25,12 +25,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       error.message == "url is already disabled"
     ) {
       return;
+    } else if (
+      error instanceof ConflictError &&
+      error.message == "dynamic rule has reach quota"
+    ) {
+      return;
     } else {
       console.log(error);
     }
   }
 });
-
-function name(params) {
-  ex;
-}
