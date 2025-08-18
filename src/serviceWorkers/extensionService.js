@@ -45,7 +45,7 @@ class ExtensionService {
   async disableBlockingRuleForUrl(aUrl) {
     const existingRules = await this._getDynamicRules();
 
-    if (this._hasNumberOfDynamicRuleReachLimit(existingRules)) {
+    if (this._hasNumberOfDynamicRuleHitMaxLimit(existingRules)) {
       throw new ConflictError("dynamic rule has reach quota");
     }
 
@@ -72,7 +72,7 @@ class ExtensionService {
     return await chrome.declarativeNetRequest.getDynamicRules();
   }
 
-  _hasNumberOfDynamicRuleReachLimit(rules) {
+  _hasNumberOfDynamicRuleHitMaxLimit(rules) {
     if (rules.length >= 5000) {
       return true;
     }

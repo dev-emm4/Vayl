@@ -2,55 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Vayl</title>
-    <meta name="viewport" content="width=800, height=600, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vayl - Tracker Blocker</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <div class="popup-container">
-      <!-- Header with activate/deactivate button -->
-      <header class="popup-header">
-        <h1 class="popup-title">Vayl</h1>
-        <button id="toggle-extension" class="toggle-btn active">
-          Deactivate
-        </button>
-      </header>
+    <div class="background-pattern"></div>
 
-      <!-- Website URL and Score Section -->
-      <section class="website-info">
-        <div class="website-details">
-          <span class="website-label">Website:</span>
-          <span class="website-url">www.example.com</span>
-        </div>
-        <div class="website-score">
-          <span class="score-label">Score:</span>
-          <span class="score-value">8.5/10</span>
-        </div>
-      </section>
+    <div class="container">
+      <div class="header">
+        <img src="../../icons/logo_48x48.png" alt="vayl logo" class="logo" />
+        <div class="brand-name">Vayl</div>
+      </div>
 
-      <!-- Show Blocked Trackers Button -->
-      <div class="reflection-btn-wrapper">
-        <button class="show-trackers-btn" id="show-trackers-btn">
-          Show Blocked Trackers
-        </button>
+      <div class="main-content">
+        <div class="status-indicator enabled" id="statusIndicator">
+          <div class="status-icon" id="statusIcon">🛡️</div>
+        </div>
+
+        <div class="status-text" id="statusText">Protection Active</div>
+        <div class="status-subtitle" id="statusSubtitle">
+          Blocking trackers and protecting your privacy
+        </div>
+
+        <div class="toggle-container">
+          <button class="toggle-button enabled" id="toggleButton">
+            Disable Protection
+          </button>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="stats">
+          <div>Trackers blocked today: <strong>47</strong></div>
+          <div>Sites protected: <strong>23</strong></div>
+        </div>
       </div>
     </div>
-
-    <!-- Slide-out Blocked Trackers Panel -->
-    <aside class="trackers-panel" id="trackers-panel">
-      <div class="panel-header">
-        <button id="close-panel" class="close-panel-btn" aria-label="Close">
-          &times;
-        </button>
-        <h2>Blocked Trackers</h2>
-      </div>
-      <ul class="trackers-list">
-        <li>tracker1.analytics.com</li>
-        <li>ads.example.com</li>
-        <li>pixel.tracker.net</li>
-        <li>another-tracker.org</li>
-      </ul>
-    </aside>
 
     <script src="popup.js"></script>
   </body>
