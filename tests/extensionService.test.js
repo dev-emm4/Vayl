@@ -123,47 +123,4 @@ describe("extensionService Test", () => {
 
     expect(isBlockingEnabled).toEqual(true);
   });
-
-  test("should publish a disabledBlocking event", async () => {
-    chrome.declarativeNetRequest.resetDynamicRules([]);
-    chrome.runtime.resetEvent();
-
-    await extensionService.disableBlockingRuleForUrl("https:/example.com");
-
-    const publishedEvent = chrome.runtime.getPublishedEvent();
-    const expectedEvent = {
-      action: "disabledBlocking",
-      domain: "example.com",
-    };
-
-    expect(publishedEvent).toEqual(expectedEvent);
-  });
-
-  test("should publish a enabledBlocking event", async () => {
-    const disableBlockingRule = {
-      id: 1,
-      priority: 100,
-      action: {
-        type: "allow",
-      },
-      condition: {
-        urlFilter: "*",
-        initiatorDomains: ["example.com"],
-      },
-    };
-
-    chrome.declarativeNetRequest.resetDynamicRules([]);
-    chrome.runtime.resetEvent();
-    chrome.declarativeNetRequest.addGenericRules(disableBlockingRule, 1); // disabling blocking for example.com
-
-    await extensionService.enableBlockingForUrl("example.com");
-
-    const publishedEvent = chrome.runtime.getPublishedEvent();
-    const expectedEvent = {
-      action: "enabledBlocking",
-      domain: "example.com",
-    };
-
-    expect(publishedEvent).toEqual(expectedEvent);
-  });
 });

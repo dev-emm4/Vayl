@@ -32,16 +32,11 @@ class VaylPopup {
       const response = await chrome.runtime.sendMessage(message);
 
       if (response.status == "success") {
-        console.log(response);
-
         this.isEnabled = !this.isEnabled;
-        this.updateUI();
 
+        this.updateUI();
         // Add visual feedback
-        this.toggleButton.style.transform = "scale(0.95)";
-        setTimeout(() => {
-          this.toggleButton.style.transform = "";
-        }, 150);
+        this.visualFeedback();
       } else if (
         response.status == "error" &&
         response.message == "blocking is already disabled"
@@ -105,8 +100,16 @@ class VaylPopup {
       this.statusIndicator.className = "status-indicator disabled";
       this.statusIcon.textContent = "⚠️";
       this.statusText.textContent = "Protection Disabled";
-      this.statusSubtitle.textContent = "Trackers are not being blocked";
+      this.statusSubtitle.textContent =
+        "Trackers are not being blocked on this site";
     }
+  }
+
+  visualFeedback() {
+    this.toggleButton.style.transform = "scale(0.95)";
+    setTimeout(() => {
+      this.toggleButton.style.transform = "";
+    }, 150);
   }
 
   setupInteractiveEffects() {
