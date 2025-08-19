@@ -7,10 +7,11 @@ class ExtensionService {
   }
 
   async isBlockingEnabledFor(aUrl) {
+    const domain = this._extractDomain(aUrl);
     const existingRules = await this._getDynamicRules();
     const existingBlockingRulesId = this._getIdsOfExistingDisableBlockingRule(
       existingRules,
-      aUrl
+      domain
     );
 
     if (existingBlockingRulesId == null) {
@@ -21,10 +22,11 @@ class ExtensionService {
   }
 
   async enableBlockingForUrl(aUrl) {
+    const domain = this._extractDomain(aUrl);
     const existingRules = await this._getDynamicRules();
     const existingBlockingRulesId = this._getIdsOfExistingDisableBlockingRule(
       existingRules,
-      aUrl
+      domain
     );
 
     if (existingBlockingRulesId == null) {
@@ -35,14 +37,15 @@ class ExtensionService {
       removeRuleIds: existingBlockingRulesId,
     };
 
-    this._updateDynamicRule(updateRuleOption);
+    await this._updateDynamicRule(updateRuleOption);
     this._publishEvent({
       action: "enabledBlocking",
-      url: aUrl,
+      domain: domain,
     });
   }
 
   async disableBlockingRuleForUrl(aUrl) {
+    const domain = this._extractDomain(aUrl);
     const existingRules = await this._getDynamicRules();
 
     if (this._hasNumberOfDynamicRuleHitMaxLimit(existingRules)) {
@@ -50,7 +53,7 @@ class ExtensionService {
     }
 
     if (
-      this._getIdsOfExistingDisableBlockingRule(existingRules, aUrl) != null
+      this._getIdsOfExistingDisableBlockingRule(existingRules, domain) != null
     ) {
       throw new ConflictError("blocking is already disabled");
     }
@@ -58,13 +61,13 @@ class ExtensionService {
     const id = this.idGenerator.generateId();
 
     const updateRuleOption = {
-      addRules: [this._disablingBlockingRuleForUrl(aUrl, id)],
+      addRules: [this._disablingBlockingRuleForUrl(domain, id)],
     };
 
-    this._updateDynamicRule(updateRuleOption);
-    this._publishEvent({
+    await this._updateDynamicRule(updateRuleOption);
+    await this._publishEvent({
       action: "disabledBlocking",
-      url: aUrl,
+      domain: domain,
     });
   }
 
@@ -80,11 +83,11 @@ class ExtensionService {
     return false;
   }
 
-  _getIdsOfExistingDisableBlockingRule(rules, url) {
+  _getIdsOfExistingDisableBlockingRule(aRules, aDomain) {
     const existingDisableBlockingRule = [];
 
-    rules.forEach((rule) => {
-      if (this._doesRuleDisableBlockingForUrl(rule, url)) {
+    aRules.forEach((rule) => {
+      if (this._doesRuleDisableBlockingForDomain(rule, aDomain)) {
         existingDisableBlockingRule.push(rule.id);
       }
     });
@@ -96,31 +99,35 @@ class ExtensionService {
     return existingDisableBlockingRule;
   }
 
-  _doesRuleDisableBlockingForUrl(rule, url) {
-    if (rule.priority != 100) {
+  _doesRuleDisableBlockingForDomain(aRule, aDomain) {
+    if (aRule.priority != 100) {
       return false;
     }
 
-    if (rule.action.type != "allow") {
+    if (aRule.action.type != "allow") {
       return false;
     }
 
-    if (rule.condition.urlFilter != "*") {
+    if (aRule.condition.urlFilter != "*") {
       return false;
     }
 
-    if (rule.condition.initiatorDomain != url) {
+    if (aRule.condition.initiatorDomains.length != 1) {
       return false;
     }
 
-    if (rule.condition.excludedInitiatorDomain != undefined) {
+    if (!aRule.condition.initiatorDomains.includes(aDomain)) {
+      return false;
+    }
+
+    if (aRule.condition.excludedInitiatorDomain != undefined) {
       return false;
     }
 
     return true;
   }
 
-  _disablingBlockingRuleForUrl(aUrl, anId) {
+  _disablingBlockingRuleForUrl(aDomain, anId) {
     const rule = {
       id: anId,
       priority: 100,
@@ -129,19 +136,28 @@ class ExtensionService {
       },
       condition: {
         urlFilter: "*",
-        initiatorDomain: aUrl,
+        initiatorDomains: [aDomain],
       },
     };
 
     return rule;
   }
 
+  _extractDomain(url) {
+    try {
+      return new URL(url).hostname;
+    } catch (e) {
+      // If URL is already just a domain, return as-is
+      return url.replace(/^https?:\/\//, "").split("/")[0];
+    }
+  }
+
   async _updateDynamicRule(anUpdateRuleOptions) {
     await chrome.declarativeNetRequest.updateDynamicRules(anUpdateRuleOptions);
   }
 
-  _publishEvent(aMessage) {
-    chrome.runtime.sendMessage(aMessage);
+  async _publishEvent(aMessage) {
+    await chrome.runtime.sendMessage(aMessage);
   }
 }
 

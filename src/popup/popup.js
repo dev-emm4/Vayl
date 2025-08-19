@@ -15,6 +15,8 @@ class VaylPopup {
 
     // Load saved state
     await this.loadState();
+    console.log(this.isEnabled);
+
     this.updateUI();
     this.setupInteractiveEffects();
   }
@@ -24,33 +26,55 @@ class VaylPopup {
       const currentTab = await this.retrieveCurrentTab();
       const message = {
         action: this.isEnabled ? "disableBlocking" : "enableBlocking",
-        url: currentTab.url,
+        initiatorUrl: currentTab.url,
       };
 
-      await chrome.runtime.sendMessage(message);
+      const response = await chrome.runtime.sendMessage(message);
 
-      this.isEnabled = !this.isEnabled;
-      this.updateUI();
+      if (response.status == "success") {
+        console.log(response);
 
-      // Add visual feedback
-      this.toggleButton.style.transform = "scale(0.95)";
-      setTimeout(() => {
-        this.toggleButton.style.transform = "";
-      }, 150);
+        this.isEnabled = !this.isEnabled;
+        this.updateUI();
+
+        // Add visual feedback
+        this.toggleButton.style.transform = "scale(0.95)";
+        setTimeout(() => {
+          this.toggleButton.style.transform = "";
+        }, 150);
+      } else if (
+        response.status == "error" &&
+        response.message == "blocking is already disabled"
+      ) {
+        return;
+      } else if (
+        response.status == "error" &&
+        response.message == "dynamic rule has reach quota"
+      ) {
+        return;
+      } else if (
+        response.status == "error" &&
+        response.message == "blocking is already enabled"
+      ) {
+        return;
+      } else {
+        console.log(response);
+      }
     } catch (error) {
-      console.log("");
+      console.log(error);
     }
   }
 
   async loadState() {
     const currentTab = await this.retrieveCurrentTab();
     const message = {
-      action: "isRuleEnabled",
-      url: currentTab.url,
+      action: "isBlockingEnabled",
+      initiatorUrl: currentTab.url,
     };
-    console.log(currentTab.url);
 
     const response = await chrome.runtime.sendMessage(message);
+    console.log(response);
+
     this.isEnabled = response.enability;
   }
 

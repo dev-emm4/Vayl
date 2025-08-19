@@ -56,7 +56,7 @@ describe("extensionController Test", () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
     const request = {
-      initiatorUrl: "example.com",
+      initiatorUrl: "https:/example.com",
     };
 
     await extensionController.disableBlocking(request, response);
@@ -71,7 +71,7 @@ describe("extensionController Test", () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
     const request = {
-      initiatorUrl: "example.com",
+      initiatorUrl: "http:/example.com",
     };
 
     await extensionController.enableBlocking(request, response);
@@ -86,7 +86,7 @@ describe("extensionController Test", () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
     const request = {
-      initiatorUrl: "example.com",
+      initiatorUrl: "https:/example.com",
     };
 
     await extensionController.isBlockingEnabled(request, response);
@@ -127,7 +127,7 @@ function createRule() {
     },
     condition: {
       urlFilter: "*",
-      initiatorDomain: "example2.com",
+      initiatorDomains: ["example2.com"],
     },
   };
 

@@ -1,9 +1,7 @@
 class IdGenerator {
   generateId() {
-    const randomNumber = Math.floor(Math.random() * 214748) + 1;
-    const timeStamp = Date.now();
-    const id = parseInt(`${randomNumber}${timeStamp}`);
-
+    const random = Math.floor(Math.random() * 1000);
+    const id = parseInt(random);
     return id;
   }
 }

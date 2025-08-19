@@ -40,6 +40,8 @@ class ExtensionController {
         aResponse(message);
       } else {
         console.log(error);
+
+        aResponse(error);
       }
     }
   }
@@ -80,6 +82,7 @@ class ExtensionController {
     };
 
     aResponse(message);
+    return true;
   }
 }
 
