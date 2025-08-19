@@ -1,5 +1,5 @@
 import ExtensionService from "../src/serviceWorkers/extensionService";
-import ConflictError from "../src/serviceWorkers/error/conflictError";
+import ConflictError from "../src/error/conflictError";
 
 const extensionService = new ExtensionService();
 
@@ -68,7 +68,7 @@ describe("extensionService Test", () => {
     };
 
     chrome.declarativeNetRequest.resetDynamicRules([]);
-    chrome.declarativeNetRequest.addGenericRules(disableBlockingRule, 4);
+    chrome.declarativeNetRequest.addGenericRules(disableBlockingRule, 4); // disabling blocking for example.com
 
     await extensionService.enableBlockingForUrl("example.com");
 

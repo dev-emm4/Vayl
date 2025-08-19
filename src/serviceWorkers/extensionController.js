@@ -1,37 +1,86 @@
 import ExtensionService from "./extensionService.js";
-import ConflictError from "./error/conflictError.js";
+import ConflictError from "../error/conflictError.js";
 
-const extensionService = new ExtensionService();
+class ExtensionController {
+  constructor() {
+    this.extensionService = new ExtensionService();
+  }
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  try {
-    if (message.action == "disableBlocking") {
-      await extensionService.disableBlockingRuleForUrl(message.url);
-    } else if (message.action == "enableBlocking") {
-      await extensionService.enableBlockingForUrl(message.url);
-    } else if (message.action == "isRuleEnabled") {
-      const isRuleEnabled = extensionService.isBlockingEnabledFor(message.url);
+  async disableBlocking(aRequest, aResponse) {
+    try {
+      await this.extensionService.disableBlockingRuleForUrl(
+        aRequest.initiatorUrl
+      );
 
-      sendResponse(isRuleEnabled);
-    }
-  } catch (error) {
-    if (
-      error instanceof ConflictError &&
-      error.message == "blocking is already enabled"
-    ) {
-      return;
-    } else if (
-      error instanceof ConflictError &&
-      error.message == "blocking is already disabled"
-    ) {
-      return;
-    } else if (
-      error instanceof ConflictError &&
-      error.message == "dynamic rule has reach quota"
-    ) {
-      return;
-    } else {
-      console.log(error);
+      const message = {
+        status: "success",
+      };
+
+      aResponse(message);
+    } catch (error) {
+      if (
+        error instanceof ConflictError &&
+        error.message == "blocking is already disabled"
+      ) {
+        const message = {
+          status: "error",
+          message: error.message,
+        };
+
+        aResponse(message);
+      } else if (
+        error instanceof ConflictError &&
+        error.message == "dynamic rule has reach quota"
+      ) {
+        const message = {
+          status: "error",
+          message: error.message,
+        };
+
+        aResponse(message);
+      } else {
+        console.log(error);
+      }
     }
   }
-});
+
+  async enableBlocking(aRequest, aResponse) {
+    try {
+      await this.extensionService.enableBlockingForUrl(aRequest.initiatorUrl);
+
+      const message = {
+        status: "success",
+      };
+
+      aResponse(message);
+    } catch (error) {
+      if (
+        error instanceof ConflictError &&
+        error.message == "blocking is already enabled"
+      ) {
+        const message = {
+          status: "error",
+          message: error.message,
+        };
+
+        aResponse(message);
+      } else {
+        console.log(error);
+      }
+    }
+  }
+
+  async isBlockingEnabled(aRequest, aResponse) {
+    const isBlockingEnabled = await this.extensionService.isBlockingEnabledFor(
+      aRequest.initiatorUrl
+    );
+    const message = {
+      status: "success",
+      enability: isBlockingEnabled,
+    };
+
+    aResponse(message);
+  }
+}
+
+export default ExtensionController;

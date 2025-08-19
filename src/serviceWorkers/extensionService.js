@@ -1,5 +1,5 @@
-import IdGenerator from "./idGenerator.js";
-import ConflictError from "./error/conflictError.js";
+import IdGenerator from "../utils/idGenerator.js";
+import ConflictError from "../error/conflictError.js";
 
 class ExtensionService {
   constructor() {
