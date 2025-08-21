@@ -1,16 +1,15 @@
-import ExtensionService from "../src/serviceWorkers/extensionService";
+import ExtensionService from "../src/applicationService/extensionService";
 import ConflictError from "../src/error/conflictError";
 
 const extensionService = new ExtensionService();
 
 describe("extensionService Test", () => {
-  test("should create disableBlockingRule for specified domain", async () => {
+  test("should disable blocking for specified domain", async () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
-    await extensionService.disableBlockingRuleForUrl("http://example.com/");
+    await extensionService.disableBlockingForUrl("http://example.com/");
 
     const dynamicRules = chrome.declarativeNetRequest.getDynamicRules();
-    console.log(dynamicRules[0].condition);
 
     expect(dynamicRules[0].priority).toEqual(100);
     expect(dynamicRules[0].action.type).toEqual("allow");
@@ -20,16 +19,16 @@ describe("extensionService Test", () => {
     );
   });
 
-  test("should throw error if disableBlockingRule already exists for specified domain", async () => {
+  test("should throw error if blocking is already disabled for specified domain", async () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
-    await extensionService.disableBlockingRuleForUrl("http://example.com/");
+    await extensionService.disableBlockingForUrl("http://example.com/");
 
     expect(
-      extensionService.disableBlockingRuleForUrl("http://example.com/")
+      extensionService.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow(ConflictError);
     expect(
-      extensionService.disableBlockingRuleForUrl("http://example.com/")
+      extensionService.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow("blocking is already disabled");
   });
 
@@ -50,14 +49,14 @@ describe("extensionService Test", () => {
     chrome.declarativeNetRequest.addGenericRules(rule, 5000);
 
     expect(
-      extensionService.disableBlockingRuleForUrl("http://example.com/")
+      extensionService.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow(ConflictError);
     expect(
-      extensionService.disableBlockingRuleForUrl("http://example.com/")
+      extensionService.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow("dynamic rule has reach quota");
   });
 
-  test("should remove disableBlockingRule for specified domain from dynamicRule", async () => {
+  test("should enable blocking for specified domain ", async () => {
     const disableBlockingRule = {
       id: 1,
       priority: 100,
@@ -80,7 +79,7 @@ describe("extensionService Test", () => {
     expect(dynamicRules).toEqual([]);
   });
 
-  test("should throw error if disableBlockingRule for domain does not exist", async () => {
+  test("should throw error if blocking is already enable for domain", async () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
     expect(
@@ -91,7 +90,7 @@ describe("extensionService Test", () => {
     ).rejects.toThrow("blocking is already enabled");
   });
 
-  test("should return false if disableBlockingRule exists for domain", async () => {
+  test("should return false if blocking is disabled for domain", async () => {
     const disableBlockingRule = {
       id: 1,
       priority: 100,
@@ -114,7 +113,7 @@ describe("extensionService Test", () => {
     expect(isBlockingEnabled).toEqual(false);
   });
 
-  test("should return true if disableBlockingRule does not exist for domain", async () => {
+  test("should return true if blocking is enabled for domain", async () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
     const isBlockingEnabled = await extensionService.isBlockingEnabledFor(

@@ -9,10 +9,8 @@ class ExtensionService {
   async isBlockingEnabledFor(aUrl) {
     const domain = this._extractDomain(aUrl);
     const existingRules = await this._getDynamicRules();
-    const existingBlockingRulesId = this._getIdsOfExistingDisableBlockingRule(
-      existingRules,
-      domain
-    );
+    const existingBlockingRulesId =
+      this._idsOfExistingDisableBlockingRuleForDomain(existingRules, domain);
 
     if (existingBlockingRulesId == null) {
       return true;
@@ -24,10 +22,8 @@ class ExtensionService {
   async enableBlockingForUrl(aUrl) {
     const domain = this._extractDomain(aUrl);
     const existingRules = await this._getDynamicRules();
-    const existingBlockingRulesId = this._getIdsOfExistingDisableBlockingRule(
-      existingRules,
-      domain
-    );
+    const existingBlockingRulesId =
+      this._idsOfExistingDisableBlockingRuleForDomain(existingRules, domain);
 
     if (existingBlockingRulesId == null) {
       throw new ConflictError("blocking is already enabled");
@@ -40,17 +36,17 @@ class ExtensionService {
     await this._updateDynamicRule(updateRuleOption);
   }
 
-  async disableBlockingRuleForUrl(aUrl) {
+  async disableBlockingForUrl(aUrl) {
     const domain = this._extractDomain(aUrl);
     const existingRules = await this._getDynamicRules();
 
-    // await this._updateDynamicRule(updateRuleOption);
     if (this._hasNumberOfDynamicRuleHitMaxLimit(existingRules)) {
       throw new ConflictError("dynamic rule has reach quota");
     }
 
     if (
-      this._getIdsOfExistingDisableBlockingRule(existingRules, domain) != null
+      this._idsOfExistingDisableBlockingRuleForDomain(existingRules, domain) !=
+      null
     ) {
       throw new ConflictError("blocking is already disabled");
     }
@@ -58,10 +54,19 @@ class ExtensionService {
     const id = this.idGenerator.generateId();
 
     const updateRuleOption = {
-      addRules: [this._disablingBlockingRuleForUrl(domain, id)],
+      addRules: [this._disablingBlockingRuleForDomain(domain, id)],
     };
 
     await this._updateDynamicRule(updateRuleOption);
+  }
+
+  _extractDomain(url) {
+    try {
+      return new URL(url).hostname;
+    } catch (e) {
+      // If URL is already just a domain, return as-is
+      return url.replace(/^https?:\/\//, "").split("/")[0];
+    }
   }
 
   async _getDynamicRules() {
@@ -76,11 +81,11 @@ class ExtensionService {
     return false;
   }
 
-  _getIdsOfExistingDisableBlockingRule(aRules, aDomain) {
+  _idsOfExistingDisableBlockingRuleForDomain(aRules, aDomain) {
     const existingDisableBlockingRule = [];
 
     aRules.forEach((rule) => {
-      if (this._doesRuleDisableBlockingForDomain(rule, aDomain)) {
+      if (this._isRuleDisablingBlockingForDomain(rule, aDomain)) {
         existingDisableBlockingRule.push(rule.id);
       }
     });
@@ -92,7 +97,7 @@ class ExtensionService {
     return existingDisableBlockingRule;
   }
 
-  _doesRuleDisableBlockingForDomain(aRule, aDomain) {
+  _isRuleDisablingBlockingForDomain(aRule, aDomain) {
     if (aRule.priority != 100) {
       return false;
     }
@@ -105,11 +110,15 @@ class ExtensionService {
       return false;
     }
 
-    if (aRule.condition.initiatorDomains.length != 1) {
+    if (!("initiatorDomains" in aRule.condition)) {
       return false;
     }
 
     if (!aRule.condition.initiatorDomains.includes(aDomain)) {
+      return false;
+    }
+
+    if (aRule.condition.initiatorDomains.length != 1) {
       return false;
     }
 
@@ -120,7 +129,7 @@ class ExtensionService {
     return true;
   }
 
-  _disablingBlockingRuleForUrl(aDomain, anId) {
+  _disablingBlockingRuleForDomain(aDomain, anId) {
     const rule = {
       id: anId,
       priority: 100,
@@ -134,15 +143,6 @@ class ExtensionService {
     };
 
     return rule;
-  }
-
-  _extractDomain(url) {
-    try {
-      return new URL(url).hostname;
-    } catch (e) {
-      // If URL is already just a domain, return as-is
-      return url.replace(/^https?:\/\//, "").split("/")[0];
-    }
   }
 
   async _updateDynamicRule(anUpdateRuleOptions) {

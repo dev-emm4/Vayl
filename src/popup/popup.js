@@ -1,6 +1,10 @@
+import ExtensionService from "../applicationService/extensionService.js";
+import ConflictError from "../error/conflictError.js";
+
 class VaylPopup {
   constructor() {
-    this.isEnabled = true;
+    this.extensionService = new ExtensionService();
+    this.isBlockingEnabled = true;
     this.init();
   }
 
@@ -15,7 +19,6 @@ class VaylPopup {
 
     // Load saved state
     await this.loadState();
-    console.log(this.isEnabled);
 
     this.updateUI();
     this.setupInteractiveEffects();
@@ -24,53 +27,55 @@ class VaylPopup {
   async toggle() {
     try {
       const currentTab = await this.retrieveCurrentTab();
-      const message = {
-        action: this.isEnabled ? "disableBlocking" : "enableBlocking",
-        initiatorUrl: currentTab.url,
-      };
 
-      const response = await chrome.runtime.sendMessage(message);
+      if (this.isBlockingEnabled == true) {
+        await this.extensionService.disableBlockingForUrl(currentTab.url);
+      } else {
+        await this.extensionService.enableBlockingForUrl(currentTab.url);
+      }
 
-      if (response.status == "success") {
-        this.isEnabled = !this.isEnabled;
+      this.isBlockingEnabled = !this.isBlockingEnabled;
+
+      this.updateUI();
+      this.visualFeedback();
+    } catch (error) {
+      if (
+        error instanceof ConflictError &&
+        error.message == "blocking is already disabled"
+      ) {
+        this.isBlockingEnabled = !this.isBlockingEnabled;
 
         this.updateUI();
-        // Add visual feedback
         this.visualFeedback();
+        console.log(error.message);
       } else if (
-        response.status == "error" &&
-        response.message == "blocking is already disabled"
+        error instanceof ConflictError &&
+        error.message == "blocking is already enabled"
       ) {
-        return;
+        this.isBlockingEnabled = !this.isBlockingEnabled;
+
+        this.updateUI();
+        this.visualFeedback();
+        console.log(error.message);
       } else if (
-        response.status == "error" &&
-        response.message == "dynamic rule has reach quota"
+        error instanceof ConflictError &&
+        error.message == "dynamic rule has reach quota"
       ) {
-        return;
-      } else if (
-        response.status == "error" &&
-        response.message == "blocking is already enabled"
-      ) {
-        return;
+        console.log(error.message);
       } else {
-        console.log(response);
+        console.log(error.message);
       }
-    } catch (error) {
-      console.log(error);
     }
   }
 
   async loadState() {
     const currentTab = await this.retrieveCurrentTab();
-    const message = {
-      action: "isBlockingEnabled",
-      initiatorUrl: currentTab.url,
-    };
 
-    const response = await chrome.runtime.sendMessage(message);
-    console.log(response);
+    const enability = await this.extensionService.isBlockingEnabledFor(
+      currentTab.url
+    );
 
-    this.isEnabled = response.enability;
+    this.isBlockingEnabled = enability;
   }
 
   async retrieveCurrentTab() {
@@ -84,7 +89,7 @@ class VaylPopup {
   }
 
   updateUI() {
-    if (this.isEnabled) {
+    if (this.isBlockingEnabled) {
       // Enabled state
       this.toggleButton.textContent = "Disable Protection";
       this.toggleButton.className = "toggle-button enabled";

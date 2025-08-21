@@ -27,17 +27,14 @@
       {
         "id": "ruleset_1",
         "enabled": true,
-        "path": "src/rules/easyprivacy_processed.json"
+        "path": "rules/easyprivacy_processed.json"
       }
     ]
-  },
-  "background": {
-    "service_worker": "src/serviceWorkers/index.js",
-    "type": "module"
   },
 
   "action": {
     "default_popup": "src/popup/popup.html",
+    "type": "module",
     "default_title": "Vayl",
     "default_icon": {
       "16": "icons/logo_16x16.png",
