@@ -1,13 +1,13 @@
-import ExtensionService from "../src/applicationService/extensionService";
+import TrackerBlockingManager from "../src/applicationService/trackerBlockingManager";
 import ConflictError from "../src/error/conflictError";
 
-const extensionService = new ExtensionService();
+const trackerBlockingManager = new TrackerBlockingManager();
 
-describe("extensionService Test", () => {
+describe("TrackerBlockingManager Test", () => {
   test("should disable blocking for specified domain", async () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
-    await extensionService.disableBlockingForUrl("http://example.com/");
+    await trackerBlockingManager.disableBlockingForUrl("http://example.com/");
 
     const dynamicRules = chrome.declarativeNetRequest.getDynamicRules();
 
@@ -22,13 +22,13 @@ describe("extensionService Test", () => {
   test("should throw error if blocking is already disabled for specified domain", async () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
-    await extensionService.disableBlockingForUrl("http://example.com/");
+    await trackerBlockingManager.disableBlockingForUrl("http://example.com/");
 
     expect(
-      extensionService.disableBlockingForUrl("http://example.com/")
+      trackerBlockingManager.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow(ConflictError);
     expect(
-      extensionService.disableBlockingForUrl("http://example.com/")
+      trackerBlockingManager.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow("blocking is already disabled");
   });
 
@@ -49,10 +49,10 @@ describe("extensionService Test", () => {
     chrome.declarativeNetRequest.addGenericRules(rule, 5000);
 
     expect(
-      extensionService.disableBlockingForUrl("http://example.com/")
+      trackerBlockingManager.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow(ConflictError);
     expect(
-      extensionService.disableBlockingForUrl("http://example.com/")
+      trackerBlockingManager.disableBlockingForUrl("http://example.com/")
     ).rejects.toThrow("dynamic rule has reach quota");
   });
 
@@ -72,7 +72,7 @@ describe("extensionService Test", () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
     chrome.declarativeNetRequest.addGenericRules(disableBlockingRule, 4); // disabling blocking for example.com
 
-    await extensionService.enableBlockingForUrl("http://example.com/");
+    await trackerBlockingManager.enableBlockingForUrl("http://example.com/");
 
     const dynamicRules = chrome.declarativeNetRequest.getDynamicRules();
 
@@ -83,10 +83,10 @@ describe("extensionService Test", () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
     expect(
-      extensionService.enableBlockingForUrl("http://example.com/")
+      trackerBlockingManager.enableBlockingForUrl("http://example.com/")
     ).rejects.toThrow(ConflictError);
     expect(
-      extensionService.enableBlockingForUrl("http://example.com/")
+      trackerBlockingManager.enableBlockingForUrl("http://example.com/")
     ).rejects.toThrow("blocking is already enabled");
   });
 
@@ -106,7 +106,7 @@ describe("extensionService Test", () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
     chrome.declarativeNetRequest.addGenericRules(disableBlockingRule, 1); // disabling blocking for example.com
 
-    const isBlockingEnabled = await extensionService.isBlockingEnabledFor(
+    const isBlockingEnabled = await trackerBlockingManager.isBlockingEnabledFor(
       "http://example.com/"
     );
 
@@ -116,7 +116,7 @@ describe("extensionService Test", () => {
   test("should return true if blocking is enabled for domain", async () => {
     chrome.declarativeNetRequest.resetDynamicRules([]);
 
-    const isBlockingEnabled = await extensionService.isBlockingEnabledFor(
+    const isBlockingEnabled = await trackerBlockingManager.isBlockingEnabledFor(
       "http://example.com/"
     );
 

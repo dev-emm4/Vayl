@@ -1,9 +1,9 @@
-import ExtensionService from "../applicationService/extensionService.js";
+import TrackerBlockingManager from "../applicationService/trackerBlockingManager.js";
 import ConflictError from "../error/conflictError.js";
 
 class VaylPopup {
   constructor() {
-    this.extensionService = new ExtensionService();
+    this.trackerBlockingManager = new TrackerBlockingManager();
     this.isBlockingEnabled = true;
     this.init();
   }
@@ -29,9 +29,9 @@ class VaylPopup {
       const currentTab = await this.retrieveCurrentTab();
 
       if (this.isBlockingEnabled == true) {
-        await this.extensionService.disableBlockingForUrl(currentTab.url);
+        await this.trackerBlockingManager.disableBlockingForUrl(currentTab.url);
       } else {
-        await this.extensionService.enableBlockingForUrl(currentTab.url);
+        await this.trackerBlockingManager.enableBlockingForUrl(currentTab.url);
       }
 
       this.isBlockingEnabled = !this.isBlockingEnabled;
@@ -71,7 +71,7 @@ class VaylPopup {
   async loadState() {
     const currentTab = await this.retrieveCurrentTab();
 
-    const enability = await this.extensionService.isBlockingEnabledFor(
+    const enability = await this.trackerBlockingManager.isBlockingEnabledFor(
       currentTab.url
     );
 

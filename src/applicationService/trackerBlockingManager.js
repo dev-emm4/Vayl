@@ -1,7 +1,7 @@
 import IdGenerator from "../utils/idGenerator.js";
 import ConflictError from "../error/conflictError.js";
 
-class ExtensionService {
+class TrackerBlockingManager {
   constructor() {
     this.idGenerator = new IdGenerator();
   }
@@ -150,4 +150,4 @@ class ExtensionService {
   }
 }
 
-export default ExtensionService;
+export default TrackerBlockingManager;
